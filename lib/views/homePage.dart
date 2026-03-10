@@ -14,7 +14,7 @@ class MyHomePage extends StatelessWidget {
       persistentFooterAlignment: AlignmentDirectional.center,
       backgroundColor: const Color.fromARGB(255, 37, 36, 36),
       appBar: AppBar(
-        title: Text("TaskThingy"),
+        title: Text("taskThingy"),
         backgroundColor: const Color.fromARGB(202, 68, 137, 255),
       ),
       body: Padding(
