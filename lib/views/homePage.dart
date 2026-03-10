@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:signals/signals_flutter.dart';
 import 'package:task_thingy/views/addTaskMenu.dart';
 import 'package:task_thingy/views/timeline.dart';
 import 'package:flutter/widget_previews.dart';
-
-var counter = Signal<int>(0);
 
 //screen height 911 width: 411
 
