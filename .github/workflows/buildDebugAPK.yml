@@ -2,7 +2,7 @@ name: Build Debug FAT APK
 
 on:
   push:
-    branches: [ main ]
+    branches: [ master ]
     paths:
       - 'lib/**'
       - 'pubspec.yaml'
