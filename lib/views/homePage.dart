@@ -18,7 +18,7 @@ class MyHomePage extends StatelessWidget {
       backgroundColor: const Color.fromARGB(255, 37, 36, 36),
       appBar: AppBar(
         title: Text("TaskThingy"),
-        backgroundColor: const Color.fromARGB(202, 68, 137, 255),
+        backgroundColor: const Color.fromARGB(201, 66, 132, 247),
       ),
       body: Padding(
         padding: EdgeInsetsGeometry.directional(
