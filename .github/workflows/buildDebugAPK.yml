@@ -34,7 +34,7 @@ jobs:
         run: flutter pub get
       
       - name: Build debug FAT APK
-        run: flutter build apk --debug --split-per-abi=false
+        run: flutter build apk --debug --split-per-abi
       
       - name: Create Release
         uses: softprops/action-gh-release@v2
