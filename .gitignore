@@ -58,3 +58,8 @@ test/.test_cache/
 
 # IDE specific
 *.swo
+
+# Web related
+lib/generated_plugin_registrant.dart
+.dart_tool/chrome-device/
+build/web/
