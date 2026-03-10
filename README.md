@@ -1,3 +1,3 @@
 # task_thingy
 
-A new Flutter project.
+A task manager that's (hopefully) less miserable (currently only available for anddroid)
