@@ -31,6 +31,18 @@ enum conversionFactors {
   timePixelFactor((100 / 60) / 911),
   bubbleWidthFactor(1 / 10.275);
 
+  EdgeInsetsGeometry getHomePagePadding(
+    double screenHeight,
+    double screenWidth,
+  ) {
+    return EdgeInsetsGeometry.directional(
+      top: screenHeight * (40 / 911),
+      bottom: screenHeight * (120 / 911),
+      start: screenWidth * (30 / 411),
+      end: screenWidth * (30 / 411),
+    );
+  }
+
   final double value;
 
   const conversionFactors(this.value);
