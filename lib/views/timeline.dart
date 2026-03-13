@@ -31,7 +31,7 @@ class Timeline extends StatelessWidget {
         endDate: DateTime(2026, 3, 5, 12, 31),
         title: "Go to gym",
         description: "It's full body day",
-        bubbleColor: const Color.fromARGB(255, 129, 44, 44),
+        bubbleColor: colors.darkRed.color,
         iconColor: Colors.white,
         iconData: Icons.fitness_center_rounded,
       ).buildTask(),
@@ -40,77 +40,80 @@ class Timeline extends StatelessWidget {
         endDate: DateTime(2026, 3, 5, 17, 0),
         title: "Study",
         description: "Its pain time :/",
-        bubbleColor: const Color.fromARGB(255, 143, 146, 102),
+        bubbleColor: colors.navyBlue.color,
         iconColor: Colors.white,
         iconData: Icons.school_rounded,
       ).buildTask(),
     ];
 
-    List<Positioned> taskStackFactory(List<Task> tasks) {
-      List<Positioned> taskStack = [
-        Positioned(top: 0, child: CustomPaint(painter: timelinePainter)),
-      ];
-
-      Task prevTask = tasks[0];
-
-      double prevYposition = prevTask.getYposition(
-        prevTask.startDateString,
-        context,
-      );
-
-      double minimumGap =
-          screenHeight * conversionFactors.taskVerticalSpacing.value;
-
-      taskStack.add(Positioned(top: prevYposition, child: prevTask));
-
-      prevYposition =
-          prevYposition +
-          TimeLineLayout.durationToHeight(
-                prevTask.startDateString,
-                prevTask.endDateString,
-              ) *
-              TimeLineLayout.getScreenHeight(context) *
-              conversionFactors.timePixelFactor.value;
-
-      for (var i = 1; i < tasks.length; i++) {
-        double yPosition = tasks[i].getYposition(
-          tasks[i].startDateString,
-          context,
-        );
-        Task currentTask = tasks[i];
-        double duration2 = TimeLineLayout.durationToHeight(
-          currentTask.startDateString,
-          currentTask.endDateString,
-        );
-
-        if (yPosition - prevYposition < minimumGap) {
-          yPosition = prevYposition + minimumGap;
-        }
-
-        print(" Previous bottom: $prevYposition  Placing at: $yPosition ");
-
-        taskStack.add(Positioned(top: yPosition, child: tasks[i]));
-
-        prevYposition =
-            yPosition +
-            (duration2 *
-                conversionFactors.timePixelFactor.value *
-                TimeLineLayout.getScreenHeight(context));
-      }
-
-      return taskStack;
-    }
-
-    print("Height: $screenHeight   ,  Width: $screenWidth");
     return SingleChildScrollView(
       scrollDirection: Axis.vertical,
       child: SizedBox(
         height: screenHeight * 2,
         width: screenWidth,
-        child: Stack(children: taskStackFactory(tasks)),
+        child: Stack(
+          children: taskStackFactory(tasks, context, timelinePainter),
+        ),
       ),
     );
   }
+}
+
+List<Positioned> taskStackFactory(
+  List<Task> tasks,
+  BuildContext context,
+  TimelinePainter timelinePainter,
+) {
+  List<Positioned> taskStack = [
+    Positioned(top: 0, child: CustomPaint(painter: timelinePainter)),
+  ];
+
+  Task prevTask = tasks[0];
+
+  double prevYposition = prevTask.getYposition(
+    prevTask.startDateString,
+    context,
+  );
+
+  double minimumGap =
+      TimeLineLayout.getScreenHeight(context) *
+      conversionFactors.taskVerticalSpacing.value;
+
+  taskStack.add(Positioned(top: prevYposition, child: prevTask));
+
+  prevYposition =
+      prevYposition +
+      TimeLineLayout.durationToHeight(
+            prevTask.startDateString,
+            prevTask.endDateString,
+          ) *
+          TimeLineLayout.getScreenHeight(context) *
+          conversionFactors.timePixelFactor.value;
+
+  for (var i = 1; i < tasks.length; i++) {
+    double yPosition = tasks[i].getYposition(tasks[i].startDateString, context);
+    Task currentTask = tasks[i];
+    double duration2 = TimeLineLayout.durationToHeight(
+      currentTask.startDateString,
+      currentTask.endDateString,
+    );
+
+    if (yPosition - prevYposition < minimumGap) {
+      yPosition = prevYposition + minimumGap;
+    }
+
+    print(" Previous bottom: $prevYposition  Placing at: $yPosition ");
+
+    taskStack.add(Positioned(top: yPosition, child: tasks[i]));
+
+    prevYposition =
+        yPosition +
+        (duration2 *
+            conversionFactors.timePixelFactor.value *
+            TimeLineLayout.getScreenHeight(context));
+  }
+
+  return taskStack;
 }
 
 class TimelinePainter extends CustomPainter {
@@ -143,44 +146,3 @@ class TimelinePainter extends CustomPainter {
     return false;
   }
 }
-
-
-// class Timeline extends StatelessWidget {
-//   const Timeline({super.key});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     Size dimensions = MediaQuery.of(context).size;
-//     double screenHeight = dimensions.height;
-//     double screenWidth = dimensions.width;
-//     TimelinePainter timelinePainter = TimelinePainter();
-//     timelinePainter.context = context;
-
-//     print("Height: $screenHeight   ,  Width: $screenWidth");
-//     return SingleChildScrollView(
-//       scrollDirection: Axis.vertical,
-//       child: SizedBox(
-//         height: screenHeight * 2,
-//         width: screenWidth,
-//         child: Stack(
-//           children: [
-//             CustomPaint(painter: timelinePainter),
-//             Column(
-//               spacing:
-//                   TimeLineLayout.getScreenHeight(context) *
-//                   conversionFactors.taskVerticalSpacing.value,
-//               children: [
-//                 Task(),
-//                 Task(
-//                   taskbubble: Taskbubble(bubbleHeight: 100),
-//                   tasktime: TaskTime(start: "11:00", end: "12:00"),
-//                 ),
-//                 Task(),
-//               ],
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }

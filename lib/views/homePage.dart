@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:task_thingy/utils/layoutMath.dart';
 import 'package:task_thingy/views/addTaskMenu.dart';
 import 'package:task_thingy/views/timeline.dart';
 import 'package:flutter/widget_previews.dart';
-
-//screen height 911 width: 411
+import 'package:task_thingy/utils/theme.dart';
 
 class MyHomePage extends StatelessWidget {
   const MyHomePage({super.key});
@@ -12,17 +12,15 @@ class MyHomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       persistentFooterAlignment: AlignmentDirectional.center,
-      backgroundColor: const Color.fromARGB(255, 37, 36, 36),
+      backgroundColor: homePageColors.background.color,
       appBar: AppBar(
         title: Text("taskThingy"),
-        backgroundColor: const Color.fromARGB(202, 68, 137, 255),
+        backgroundColor: homePageColors.appBar.color,
       ),
       body: Padding(
-        padding: EdgeInsetsGeometry.directional(
-          top: 40,
-          bottom: 120,
-          start: 30,
-          end: 30,
+        padding: conversionFactors.bubbleWidthFactor.getHomePagePadding(
+          TimeLineLayout.getScreenHeight(context),
+          TimeLineLayout.getScreenWidth(context),
         ),
         child: Timeline(),
       ),
@@ -35,11 +33,8 @@ class MyHomePage extends StatelessWidget {
             builder: (context) => const AddTaskMenu(),
           );
         },
-        backgroundColor: const Color.fromARGB(207, 143, 77, 103),
-        child: Icon(
-          Icons.add_rounded,
-          color: const Color.fromARGB(255, 215, 213, 214),
-        ),
+        backgroundColor: colors.buttonColor.color,
+        child: Icon(Icons.add_rounded, color: colors.taskTextColor.color),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );

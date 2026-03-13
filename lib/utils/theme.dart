@@ -15,6 +15,35 @@ enum colors {
   final Color color;
 
   const colors(this.color);
+
+  List<Color> getTaskColors() {
+    return [
+      brightYellow.color,
+      brightGreen.color,
+      cyan.color,
+      darkRed.color,
+      orange.color,
+      navyBlue.color,
+    ];
+  }
+}
+
+enum addTaskMenuColors {
+  menuBackgroundColor(Color.fromARGB(230, 101, 87, 98)),
+  timePickerButton(Color.fromARGB(209, 131, 59, 115));
+
+  final Color color;
+
+  const addTaskMenuColors(this.color);
+}
+
+enum homePageColors {
+  appBar(Color.fromARGB(202, 68, 137, 255)),
+  background(Color.fromARGB(255, 37, 36, 36));
+
+  final Color color;
+
+  const homePageColors(this.color);
 }
 
 enum textSizes {

@@ -6,6 +6,7 @@ import 'package:signals/signals_flutter.dart';
 import 'package:task_thingy/utils/layoutMath.dart';
 import 'package:task_thingy/utils/theme.dart';
 import 'package:task_thingy/models/taskData.dart';
+import 'package:task_thingy/utils/misc.dart';
 
 var taskDraft = signal<TaskModel>(defaultTask);
 var selectedColorIndex = signal<int>(0);
@@ -26,14 +27,6 @@ class AddTaskMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     taskDraft.value = defaultTask;
-    List<Color> colorChoices = [
-      colors.brightYellow.color,
-      colors.brightGreen.color,
-      colors.cyan.color,
-      colors.darkRed.color,
-      colors.orange.color,
-      colors.navyBlue.color,
-    ];
 
     return Padding(
       padding: EdgeInsets.only(
@@ -53,12 +46,7 @@ class AddTaskMenu extends StatelessWidget {
           alignment: Alignment.topLeft,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(40),
-            color: const Color.fromARGB(
-              209,
-              101,
-              87,
-              98,
-            ).withValues(alpha: 0.9),
+            color: addTaskMenuColors.menuBackgroundColor.color,
           ),
           width: TimeLineLayout.getScreenWidth(context) * 0.99,
           height: TimeLineLayout.getScreenHeight(context) * 0.6,
@@ -77,7 +65,7 @@ class AddTaskMenu extends StatelessWidget {
               ),
               timePickerButton(isStart: true),
               timePickerButton(isStart: false),
-              colorPicker(colorChoices: colorChoices),
+              colorPicker(colorChoices: colors.brightGreen.getTaskColors()),
               addButton(),
             ],
           ),
@@ -137,6 +125,27 @@ class TaskTextInput extends StatelessWidget {
   }
 }
 
+CupertinoDatePicker makeTimePicker(bool isStart, DateTime minimumDate) {
+  return CupertinoDatePicker(
+    minimumDate: minimumDate,
+    use24hFormat: true,
+    backgroundColor: Color.fromARGB(209, 101, 87, 98).withValues(alpha: 0.9),
+    mode: CupertinoDatePickerMode.dateAndTime,
+    initialDateTime: minimumDate,
+    onDateTimeChanged: (DateTime newDateTime) => {
+      taskDraft.value = isStart
+          ? taskDraft.value.copyWith(
+              startDate: newDateTime,
+              endDate: newDateTime,
+            )
+          : taskDraft.value.copyWith(endDate: newDateTime),
+      print(
+        "start: ${taskDraft.value.startDate}  end: ${taskDraft.value.endDate}",
+      ),
+    },
+  );
+}
+
 class timePickerButton extends StatelessWidget {
   final bool isStart;
 
@@ -149,43 +158,19 @@ class timePickerButton extends StatelessWidget {
 
       return GestureDetector(
         onTap: () async {
-          CupertinoDatePicker datePicker = CupertinoDatePicker(
-            minimumDate: minimumDate,
-            use24hFormat: true,
-            backgroundColor: Color.fromARGB(
-              209,
-              101,
-              87,
-              98,
-            ).withValues(alpha: 0.9),
-            mode: CupertinoDatePickerMode.dateAndTime,
-            initialDateTime: minimumDate,
-            onDateTimeChanged: (DateTime newDateTime) => {
-              taskDraft.value = isStart
-                  ? taskDraft.value.copyWith(
-                      startDate: newDateTime,
-                      endDate: newDateTime,
-                    )
-                  : taskDraft.value.copyWith(endDate: newDateTime),
-              print(
-                "start: ${taskDraft.value.startDate}  end: ${taskDraft.value.endDate}",
-              ),
-            },
-          );
+          CupertinoDatePicker datePicker = makeTimePicker(isStart, minimumDate);
 
           showCupertinoModalPopup(
             context: context,
             builder: (BuildContext context) => Container(
               decoration: BoxDecoration(
-                color: Color.fromARGB(209, 101, 87, 98).withValues(alpha: 0.9),
+                color: addTaskMenuColors.menuBackgroundColor.color,
               ),
               width: TimeLineLayout.getScreenWidth(context) * 0.99,
               height: TimeLineLayout.getScreenHeight(context) * 0.4,
               child: datePicker,
             ),
           );
-
-          // 3. THE CRITICAL FIX: Assign back to .value
         },
         child: Container(
           alignment: Alignment.center,
@@ -195,11 +180,14 @@ class timePickerButton extends StatelessWidget {
           width: TimeLineLayout.getScreenWidth(context) * 0.7,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(40),
-            color: const Color.fromARGB(209, 131, 59, 115),
+            color: addTaskMenuColors.timePickerButton.color,
           ),
           child: Text(
+            isStart
+                ? taskDraft.value.startDate.toTaskFormat()
+                : taskDraft.value.endDate.toTaskFormat(),
             textAlign: TextAlign.center,
-            " ${isStart ? zeroPrepend(taskDraft.value.startDate.day) : zeroPrepend(taskDraft.value.endDate.day)}.${isStart ? zeroPrepend(taskDraft.value.startDate.month) : zeroPrepend(taskDraft.value.endDate.month)}.${isStart ? taskDraft.value.startDate.year : taskDraft.value.endDate.year}   ${isStart ? zeroPrepend(taskDraft.value.startDate.hour) : zeroPrepend(taskDraft.value.endDate.hour)}:${isStart ? zeroPrepend(taskDraft.value.startDate.minute) : zeroPrepend(taskDraft.value.endDate.minute)}",
+
             style: TextStyle(
               color: colors.taskTextColor.color,
               fontSize: textSizes.addTaskTitle.textSize,
@@ -208,14 +196,6 @@ class timePickerButton extends StatelessWidget {
         ),
       );
     });
-  }
-}
-
-String zeroPrepend(int number) {
-  if (number < 10) {
-    return "0$number";
-  } else {
-    return "$number";
   }
 }
 
@@ -262,7 +242,6 @@ class colorPicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     if (colorChoices.length < 6) {
       throw UnimplementedError();
     } else {
@@ -322,7 +301,7 @@ class addButton extends StatelessWidget {
                   TimeLineLayout.getScreenHeight(context) *
                   conversionFactors.taskVerticalSpacing.value,
             ) *
-            0.7,
+            0.6,
 
         height:
             TimeLineLayout.getScreenHeight(context) *
