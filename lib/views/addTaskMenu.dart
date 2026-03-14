@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:signals/signals_flutter.dart';
+import 'package:task_thingy/states/timelineTasks.dart';
 import 'package:task_thingy/utils/layoutMath.dart';
 import 'package:task_thingy/utils/theme.dart';
 import 'package:task_thingy/models/taskData.dart';
@@ -12,8 +13,20 @@ var taskDraft = signal<TaskModel>(defaultTask);
 var selectedColorIndex = signal<int>(0);
 
 TaskModel defaultTask = TaskModel(
-  startDate: DateTime.now(),
-  endDate: DateTime.now(),
+  startDate: DateTime(
+    DateTime.now().year,
+    DateTime.now().month,
+    DateTime.now().day,
+    9,
+    0,
+  ),
+  endDate: DateTime(
+    DateTime.now().year,
+    DateTime.now().month,
+    DateTime.now().day,
+    9,
+    0,
+  ),
   title: "",
   description: "",
   bubbleColor: colors.brightYellow.color,
@@ -26,8 +39,6 @@ class AddTaskMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    taskDraft.value = defaultTask;
-
     return Padding(
       padding: EdgeInsets.only(
         bottom: MediaQuery.of(context).viewInsets.bottom,
@@ -63,8 +74,13 @@ class AddTaskMenu extends StatelessWidget {
                 textSize: textSizes.addTaskDescription.textSize,
                 maxLines: 4,
               ),
-              timePickerButton(isStart: true),
-              timePickerButton(isStart: false),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  timePickerButton(isStart: true),
+                  timePickerButton(isStart: false),
+                ],
+              ),
               colorPicker(colorChoices: colors.brightGreen.getTaskColors()),
               addButton(),
             ],
@@ -96,11 +112,6 @@ class TaskTextInput extends StatelessWidget {
         } else {
           taskDraft.value = taskDraft.value.copyWith(description: text);
         }
-        print(
-          "Title: ${taskDraft.value.title}  Description: ${taskDraft.value.description}",
-        );
-        print("Start date: ${taskDraft.value.startDate}");
-        print("End date: ${taskDraft.value.endDate}");
       },
 
       textInputAction: TextInputAction.done,
@@ -129,18 +140,17 @@ CupertinoDatePicker makeTimePicker(bool isStart, DateTime minimumDate) {
   return CupertinoDatePicker(
     minimumDate: minimumDate,
     use24hFormat: true,
-    backgroundColor: Color.fromARGB(209, 101, 87, 98).withValues(alpha: 0.9),
-    mode: CupertinoDatePickerMode.dateAndTime,
-    initialDateTime: minimumDate,
+    backgroundColor: addTaskMenuColors.menuBackgroundColor.color,
+    mode: CupertinoDatePickerMode.time,
+    initialDateTime: isStart ? minimumDate : taskDraft.value.endDate,
     onDateTimeChanged: (DateTime newDateTime) => {
-      taskDraft.value = isStart
-          ? taskDraft.value.copyWith(
-              startDate: newDateTime,
-              endDate: newDateTime,
-            )
-          : taskDraft.value.copyWith(endDate: newDateTime),
-      print(
-        "start: ${taskDraft.value.startDate}  end: ${taskDraft.value.endDate}",
+      taskDraft.value = taskDraft.value.copyWith(
+        startDate: isStart ? newDateTime : taskDraft.value.startDate,
+        endDate: isStart
+            ? newDateTime.isAfter(taskDraft.value.endDate)
+                  ? newDateTime
+                  : taskDraft.value.endDate
+            : newDateTime,
       ),
     },
   );
@@ -154,7 +164,15 @@ class timePickerButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Watch((context) {
-      DateTime minimumDate = taskDraft.value.startDate;
+      DateTime minimumDate = isStart
+          ? DateTime(
+              DateTime.now().year,
+              DateTime.now().month,
+              DateTime.now().day,
+              9,
+              0,
+            )
+          : taskDraft.value.startDate;
 
       return GestureDetector(
         onTap: () async {
@@ -177,20 +195,20 @@ class timePickerButton extends StatelessWidget {
           height:
               TimeLineLayout.getScreenHeight(context) *
               conversionFactors.taskVerticalSpacing.value,
-          width: TimeLineLayout.getScreenWidth(context) * 0.7,
+          width: TimeLineLayout.getScreenWidth(context) * 0.35,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(40),
             color: addTaskMenuColors.timePickerButton.color,
           ),
           child: Text(
             isStart
-                ? taskDraft.value.startDate.toTaskFormat()
-                : taskDraft.value.endDate.toTaskFormat(),
+                ? "Start: ${taskDraft.value.startDate.toTaskFormat()}"
+                : "End: ${taskDraft.value.endDate.toTaskFormat()}",
             textAlign: TextAlign.center,
 
             style: TextStyle(
               color: colors.taskTextColor.color,
-              fontSize: textSizes.addTaskTitle.textSize,
+              fontSize: textSizes.taskTitle.textSize,
             ),
           ),
         ),
@@ -275,7 +293,19 @@ class addButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        print("Add button pressed");
+        try {
+          taskDraft.value = taskDraft.value.copyWith(
+            bubbleColor: colors.brightGreen
+                .getTaskColors()[selectedColorIndex.value],
+          );
+          addTask(taskDraft.value);
+          print("Adding task: ${taskDraft.value.title}");
+        } catch (e) {
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(title: Text(e.toString())),
+          );
+        }
       },
       child: Container(
         decoration: BoxDecoration(

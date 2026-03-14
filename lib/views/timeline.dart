@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:signals/signals.dart';
+import 'package:signals/signals_flutter.dart';
+import 'package:task_thingy/states/timelineTasks.dart';
 import 'package:task_thingy/views/taskComponents.dart';
 import 'package:task_thingy/utils/theme.dart';
 import 'package:task_thingy/utils/layoutMath.dart';
@@ -15,26 +18,26 @@ class Timeline extends StatelessWidget {
     TimelinePainter timelinePainter = TimelinePainter();
     timelinePainter.context = context;
 
-    List<Task> tasks = [
+    List<Task> exampleTasks = [
       TaskModel(
         startDate: DateTime(2026, 3, 5, 9, 0),
-        endDate: DateTime(2026, 3, 5, 9, 45),
+        endDate: DateTime(2026, 3, 5, 9, 35),
         title: "Good morning :)",
         description: "Get started with your routine",
         bubbleColor: colors.brightYellow.color,
         iconColor: colors.taskTextColor.color,
         iconData: Icons.sunny,
-      ).buildTask(),
+      ).buildTask(context),
 
       TaskModel(
         startDate: DateTime(2026, 3, 5, 10, 5),
-        endDate: DateTime(2026, 3, 5, 12, 31),
+        endDate: DateTime(2026, 3, 5, 12, 11),
         title: "Go to gym",
         description: "It's full body day",
         bubbleColor: colors.darkRed.color,
         iconColor: Colors.white,
         iconData: Icons.fitness_center_rounded,
-      ).buildTask(),
+      ).buildTask(context),
       TaskModel(
         startDate: DateTime(2026, 3, 5, 13, 0),
         endDate: DateTime(2026, 3, 5, 17, 0),
@@ -43,19 +46,27 @@ class Timeline extends StatelessWidget {
         bubbleColor: colors.navyBlue.color,
         iconColor: Colors.white,
         iconData: Icons.school_rounded,
-      ).buildTask(),
+      ).buildTask(context),
     ];
 
-    return SingleChildScrollView(
-      scrollDirection: Axis.vertical,
-      child: SizedBox(
-        height: screenHeight * 2,
-        width: screenWidth,
-        child: Stack(
-          children: taskStackFactory(tasks, context, timelinePainter),
+    return Watch((context) {
+      List<Task> tasks = taskList.value.map((e) {
+        return e.buildTask(context);
+      }).toList();
+      print(
+        "Length: ${tasks.length} First task: ${tasks.length > 0 ? tasks[0].startDateString : "null"} ",
+      );
+      return SingleChildScrollView(
+        scrollDirection: Axis.vertical,
+        child: SizedBox(
+          height: screenHeight * 2,
+          width: screenWidth,
+          child: Stack(
+            children: taskStackFactory(tasks, context, timelinePainter),
+          ),
         ),
-      ),
-    );
+      );
+    });
   }
 }
 
@@ -67,6 +78,10 @@ List<Positioned> taskStackFactory(
   List<Positioned> taskStack = [
     Positioned(top: 0, child: CustomPaint(painter: timelinePainter)),
   ];
+
+  if (tasks.isEmpty) {
+    return taskStack;
+  }
 
   Task prevTask = tasks[0];
 
