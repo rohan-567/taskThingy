@@ -20,11 +20,19 @@ class TimeLineLayout {
   }
 }
 
+double getScreenHeight(BuildContext context) {
+  return MediaQuery.of(context).size.height;
+}
+
+double getScreenWidth(BuildContext context) {
+  return MediaQuery.of(context).size.width;
+}
+
 enum conversionFactors {
   taskRowSpacingFactor(1 / 20.55),
   bubbleLeftMarginFactor(1 / 41.1),
   taskInfoVerticalSpacingFactor(18 / 911),
-  taskTimeVerticalSpacing(25 / 50),
+  taskTimeVerticalSpacing(40 / 911),
   taskVerticalSpacing(50 / 911),
   timeLineVerticalOffset(20 / 911),
   timeLineHorizontalOffset(86 / 411),

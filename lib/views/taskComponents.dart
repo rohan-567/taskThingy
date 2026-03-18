@@ -4,72 +4,35 @@ import 'package:task_thingy/utils/theme.dart';
 
 //Minimum height and widdth for a task bubble needs to be 40 width and 50 height on my screen
 
-const TaskTime defaultTaskTime = TaskTime();
-const Taskbubble defaultTaskBubble = Taskbubble();
-const TaskInfo defaultTaskInfo = TaskInfo();
-const String defaultStartDate = "2012-02-27 09:00:00";
-const String defaultEndDate = "2012-02-27 10:00:00";
-
 class Task extends StatelessWidget {
-  final TaskTime tasktime;
-  final Taskbubble taskbubble;
+  final TaskTime taskTime;
+  final Taskbubble taskBubble;
   final TaskInfo taskInfo;
   final String startDateString;
   final String endDateString;
 
   const Task({
     super.key,
-    this.tasktime = defaultTaskTime,
-    this.taskbubble = defaultTaskBubble,
-    this.taskInfo = defaultTaskInfo,
-    this.startDateString = defaultStartDate,
-    this.endDateString = defaultEndDate,
+    required this.taskTime,
+    required this.taskBubble,
+    required this.taskInfo,
+    required this.startDateString,
+    required this.endDateString,
   });
 
   double getYposition(String dateString, BuildContext context) {
     DateTime date = DateTime.parse(dateString);
 
-    return ((date.hour.toDouble() - 9) * 60 + date.minute.toDouble()) *
+    double yPosition =
+        ((date.hour.toDouble() - 9) * 60 + date.minute.toDouble()) *
         TimeLineLayout.getScreenHeight(context) *
         conversionFactors.timePixelFactor.value;
+
+    return yPosition > 0 ? yPosition : 0;
   }
 
   @override
   Widget build(BuildContext context) {
-    String startDate = TimeLineLayout.extractHourMinute(startDateString);
-    String endDate = TimeLineLayout.extractHourMinute(endDateString);
-
-    double duration = TimeLineLayout.durationToHeight(
-      startDateString,
-      endDateString,
-    );
-
-    double bubbleHeight =
-        duration.toDouble() *
-        conversionFactors.timePixelFactor.value *
-        TimeLineLayout.getScreenHeight(context);
-
-    if (bubbleHeight <
-        TimeLineLayout.getScreenHeight(context) *
-            conversionFactors.taskVerticalSpacing.value) {
-      bubbleHeight =
-          TimeLineLayout.getScreenHeight(context) *
-          conversionFactors.taskVerticalSpacing.value;
-    }
-
-    TaskTime taskTime = TaskTime(
-      start: startDate,
-      end: endDate,
-      timeSpacing: bubbleHeight - 40,
-    );
-
-    Taskbubble taskBubble = Taskbubble(
-      bubbleHeight: bubbleHeight,
-      iconColor: taskbubble.iconColor,
-      bubbleColor: taskbubble.bubbleColor,
-      bubbleIcon: taskbubble.bubbleIcon,
-    );
-
     final double rowSpacing =
         TimeLineLayout.getScreenWidth(context) *
         conversionFactors.taskRowSpacingFactor.value;
@@ -87,11 +50,11 @@ class Taskbubble extends StatelessWidget {
 
   const Taskbubble({
     super.key,
-    this.bubbleColor = const Color.fromARGB(235, 218, 203, 64),
-    this.iconColor = const Color.fromARGB(255, 255, 255, 255),
-    this.bubbleIcon = Icons.sunny,
-    this.bubbleWidth = 40,
-    this.bubbleHeight = 50,
+    required this.bubbleColor,
+    required this.iconColor,
+    required this.bubbleIcon,
+    required this.bubbleWidth,
+    required this.bubbleHeight,
   });
   @override
   Widget build(BuildContext context) {
@@ -130,9 +93,9 @@ class TaskTime extends StatelessWidget {
 
   const TaskTime({
     super.key,
-    this.start = "11:00",
-    this.end = "",
-    this.timeSpacing = 18,
+    required this.start,
+    required this.end,
+    required this.timeSpacing,
   });
 
   @override
@@ -163,9 +126,9 @@ class TaskInfo extends StatelessWidget {
 
   const TaskInfo({
     super.key,
-    this.title = "Vacuum the floor",
-    this.description = "Lorem ipsum dolor sit amet",
-    this.infoSpacing = 15,
+    required this.title,
+    required this.description,
+    required this.infoSpacing,
   });
 
   @override
