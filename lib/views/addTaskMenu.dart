@@ -299,7 +299,7 @@ class addButton extends StatelessWidget {
                 .getTaskColors()[selectedColorIndex.value],
           );
           addTask(taskDraft.value);
-          print("Adding task: ${taskDraft.value.title}");
+          Navigator.pop(context);
         } catch (e) {
           showDialog(
             context: context,

@@ -4,6 +4,7 @@ import 'package:task_thingy/views/addTaskMenu.dart';
 import 'package:task_thingy/views/timeline.dart';
 import 'package:flutter/widget_previews.dart';
 import 'package:task_thingy/utils/theme.dart';
+import 'package:task_thingy/views/topAppBar.dart';
 
 class MyHomePage extends StatelessWidget {
   const MyHomePage({super.key});
@@ -13,10 +14,7 @@ class MyHomePage extends StatelessWidget {
     return Scaffold(
       persistentFooterAlignment: AlignmentDirectional.center,
       backgroundColor: homePageColors.background.color,
-      appBar: AppBar(
-        title: Text("taskThingy"),
-        backgroundColor: homePageColors.appBar.color,
-      ),
+      appBar: topAppBar(context: context),
       body: Padding(
         padding: conversionFactors.bubbleWidthFactor.getHomePagePadding(
           TimeLineLayout.getScreenHeight(context),
@@ -28,6 +26,7 @@ class MyHomePage extends StatelessWidget {
         onPressed: () {
           showModalBottomSheet(
             isScrollControlled: true,
+            isDismissible: true,
             context: context,
             backgroundColor: Colors.transparent,
             builder: (context) => const AddTaskMenu(),

@@ -38,8 +38,8 @@ enum addTaskMenuColors {
 }
 
 enum homePageColors {
-  appBar(Color.fromARGB(202, 68, 137, 255)),
-  background(Color.fromARGB(255, 37, 36, 36));
+  appBar(Color.fromARGB(255, 21, 21, 21)),
+  background(Color.fromARGB(255, 56, 55, 55));
 
   final Color color;
 
