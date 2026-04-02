@@ -72,7 +72,24 @@ class weekDay extends StatelessWidget {
       alignment: Alignment.center,
       margin: EdgeInsetsDirectional.only(bottom: 10),
       decoration: BoxDecoration(
+        boxShadow:
+            selectedDay.value ==
+                int.parse(
+                  weekDays.keys
+                      .firstWhere((k) => weekDays[k] == dayWeek)
+                      .toString(),
+                )
+            ? [
+                BoxShadow(
+                  color: Color.fromARGB(197, 45, 94, 180),
+                  spreadRadius: 2,
+                  blurRadius: 2,
+                  offset: Offset(0, 0),
+                ),
+              ]
+            : null,
         borderRadius: BorderRadius.circular(40),
+
         color:
             selectedDay.value ==
                 int.parse(
@@ -80,7 +97,7 @@ class weekDay extends StatelessWidget {
                       .firstWhere((k) => weekDays[k] == dayWeek)
                       .toString(),
                 )
-            ? colors.buttonColor.color
+            ? const Color.fromARGB(197, 45, 94, 180)
             : null,
       ),
       height: height,
