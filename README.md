@@ -1,6 +1,6 @@
 # TaskThingy
 
-A task manager that's (hopefully) less miserable (currently only available for android)
+A task manager that's (hopefully) helpful in managing the ver growing task list (currently only available for android)
 
 
 <h2>Planned features:</h2>
