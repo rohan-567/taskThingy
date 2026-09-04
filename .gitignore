@@ -64,3 +64,11 @@ test/.test_cache/
 lib/generated_plugin_registrant.dart
 .dart_tool/chrome-device/
 build/web/
+
+
+#Miscellaneous
+CODE_REVIEW_REPORT.md
+flutter_01.png
+.zed/
+devtools_options.yaml
+analysis_options.yaml

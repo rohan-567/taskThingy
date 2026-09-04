@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:signals/signals_flutter.dart';
+import 'package:task_thingy/models/taskData.dart';
 import 'package:task_thingy/states/timelineTasks.dart';
-import 'package:task_thingy/views/taskComponents.dart';
-import 'package:task_thingy/utils/theme.dart';
 import 'package:task_thingy/utils/layoutMath.dart';
+import 'package:task_thingy/utils/theme.dart';
+import 'package:task_thingy/views/taskComponents.dart';
 
 class Timeline extends StatelessWidget {
   const Timeline({super.key});
@@ -17,8 +18,21 @@ class Timeline extends StatelessWidget {
     timelinePainter.context = context;
 
     return Watch((context) {
-      List<Task> tasks = taskList.value.map((e) {
-        return e.buildTask(context);
+      List<TaskModel> models = [];
+      try {
+        models = currentTaskList.value;
+      } catch (e, stackTrace) {
+        FlutterError.reportError(
+          FlutterErrorDetails(
+            exception: e,
+            stack: stackTrace,
+            library: 'timeline',
+          ),
+        );
+      }
+
+      List<Task> tasks = models.map((e) {
+        return buildTaskFromModel(e, context);
       }).toList();
 
       return SingleChildScrollView(
@@ -63,17 +77,17 @@ List<Positioned> taskStackFactory(
 
   prevYposition =
       prevYposition +
-      TimeLineLayout.durationToHeight(
+      TimeLineLayout.durationToMinutes(
             prevTask.startDateString,
             prevTask.endDateString,
           ) *
           TimeLineLayout.getScreenHeight(context) *
           conversionFactors.timePixelFactor.value;
-
+  prevYposition += minimumGap;
   for (var i = 1; i < tasks.length; i++) {
     double yPosition = tasks[i].getYposition(tasks[i].startDateString, context);
     Task currentTask = tasks[i];
-    double duration2 = TimeLineLayout.durationToHeight(
+    double duration2 = TimeLineLayout.durationToMinutes(
       currentTask.startDateString,
       currentTask.endDateString,
     );
@@ -108,7 +122,7 @@ class TimelinePainter extends CustomPainter {
       TimeLineLayout.getScreenWidth(context) *
           conversionFactors.timeLineVerticalOffset.value,
     );
-    Offset p2 = Offset(centerX, 9900);
+    Offset p2 = Offset(centerX, TimeLineLayout.getScreenHeight(context) * 5);
     Paint linePaint = Paint();
     linePaint.strokeWidth = componentSizes.timelineStrokeWidth.value;
     linePaint.color = colors.timelineColor.color;
@@ -120,4 +134,66 @@ class TimelinePainter extends CustomPainter {
   bool shouldRepaint(TimelinePainter tp) {
     return false;
   }
+}
+
+Task buildTaskFromModel(TaskModel taskModel, BuildContext context) {
+  String startDateString = taskModel.startDate.toString();
+  String endDateString = taskModel.endDate.toString();
+
+  double duration = TimeLineLayout.durationToMinutes(
+    startDateString,
+    endDateString,
+  );
+
+  double bubbleHeight =
+      duration.toDouble() *
+      conversionFactors.timePixelFactor.value *
+      TimeLineLayout.getScreenHeight(context);
+
+  if (bubbleHeight <
+      TimeLineLayout.getScreenHeight(context) *
+          conversionFactors.taskVerticalSpacing.value) {
+    bubbleHeight =
+        TimeLineLayout.getScreenHeight(context) *
+        conversionFactors.taskVerticalSpacing.value;
+  }
+
+  TaskTime taskTime = TaskTime(
+    start: TimeLineLayout.extractHourMinute(startDateString),
+    end: TimeLineLayout.extractHourMinute(endDateString),
+    timeSpacing:
+        bubbleHeight -
+        (TimeLineLayout.getScreenHeight(context) *
+            conversionFactors.taskTimeVerticalSpacing.value),
+  );
+
+  Taskbubble taskBubble = Taskbubble(
+    bubbleWidth:
+        TimeLineLayout.getScreenWidth(context) *
+        conversionFactors.bubbleWidthFactor.value,
+    bubbleHeight: bubbleHeight,
+    iconColor: taskModel.iconColor,
+    bubbleColor: taskModel.bubbleColor,
+    bubbleIcon: taskModel.iconData,
+  );
+
+  TaskInfo taskInfo = TaskInfo(
+    title: taskModel.title,
+    description: taskModel.description,
+    infoSpacing:
+        TimeLineLayout.getScreenHeight(context) *
+        conversionFactors.taskInfoVerticalSpacingFactor.value,
+  );
+
+  TaskCheckBox taskCheckBox = TaskCheckBox(checked: taskModel.isChecked);
+
+  return Task(
+    taskTime: taskTime,
+    taskInfo: taskInfo,
+    taskBubble: taskBubble,
+
+    startDateString: taskModel.startDate.toString(),
+    endDateString: taskModel.endDate.toString(),
+    taskCheckBox: taskCheckBox,
+  );
 }

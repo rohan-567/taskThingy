@@ -9,23 +9,16 @@ class TimeLineLayout {
     return MediaQuery.of(context).size.width;
   }
 
-  static double durationToHeight(String start, String end) {
+  static double durationToMinutes(String start, String end) {
     DateTime startDate = DateTime.parse(start);
     DateTime endDate = DateTime.parse(end);
     return endDate.difference(startDate).inMinutes.toDouble();
   }
 
   static String extractHourMinute(String dateString) {
-    return dateString.substring(11, 16);
+    DateTime date = DateTime.parse(dateString);
+    return "${date.hour < 10 ? '0' : ''}${date.hour}:${date.minute < 10 ? '0' : ''}${date.minute}";
   }
-}
-
-double getScreenHeight(BuildContext context) {
-  return MediaQuery.of(context).size.height;
-}
-
-double getScreenWidth(BuildContext context) {
-  return MediaQuery.of(context).size.width;
 }
 
 enum conversionFactors {

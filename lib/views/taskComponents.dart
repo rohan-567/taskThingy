@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:signals/signals.dart';
+import 'package:signals/signals_flutter.dart';
 import 'package:task_thingy/utils/layoutMath.dart';
 import 'package:task_thingy/utils/theme.dart';
 
@@ -10,6 +12,7 @@ class Task extends StatelessWidget {
   final TaskInfo taskInfo;
   final String startDateString;
   final String endDateString;
+  final TaskCheckBox taskCheckBox;
 
   const Task({
     super.key,
@@ -18,6 +21,7 @@ class Task extends StatelessWidget {
     required this.taskInfo,
     required this.startDateString,
     required this.endDateString,
+    required this.taskCheckBox,
   });
 
   double getYposition(String dateString, BuildContext context) {
@@ -33,11 +37,39 @@ class Task extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    TaskCheckBox taskCheckBox = this.taskCheckBox;
+
     final double rowSpacing =
         TimeLineLayout.getScreenWidth(context) *
         conversionFactors.taskRowSpacingFactor.value;
 
-    return Row(spacing: rowSpacing, children: [taskTime, taskBubble, taskInfo]);
+    return Row(
+      spacing: rowSpacing,
+      children: [taskTime, taskBubble, taskInfo, taskCheckBox],
+    );
+  }
+}
+
+class TaskCheckBox extends StatelessWidget {
+  final Signal<bool> checked;
+
+  TaskCheckBox({super.key, required this.checked});
+
+  @override
+  Widget build(BuildContext context) {
+    return Watch(
+      (context) => SizedBox(
+        height: 50,
+        width: 50,
+        child: Checkbox.adaptive(
+          onChanged: (bool? newValue) {
+            checked.value = !checked.value;
+          },
+          shape: const CircleBorder(),
+          value: checked.value,
+        ),
+      ),
+    );
   }
 }
 

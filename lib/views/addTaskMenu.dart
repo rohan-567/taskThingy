@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:signals/signals_flutter.dart';
+import 'package:task_thingy/scripts/iconPicker.dart';
 import 'package:task_thingy/states/timelineTasks.dart';
 import 'package:task_thingy/utils/layoutMath.dart';
 import 'package:task_thingy/utils/theme.dart';
@@ -32,6 +33,7 @@ TaskModel defaultTask = TaskModel(
   bubbleColor: colors.brightYellow.color,
   iconColor: colors.taskTextColor.color,
   iconData: Icons.sunny,
+  isChecked: signal<bool>(false),
 );
 
 class AddTaskMenu extends StatelessWidget {
@@ -297,13 +299,23 @@ class addButton extends StatelessWidget {
           taskDraft.value = taskDraft.value.copyWith(
             bubbleColor: colors.brightGreen
                 .getTaskColors()[selectedColorIndex.value],
+            iconData: Iconpicker.pickIcon(
+              taskDraft.value.title,
+              taskDraft.value.description,
+            ),
           );
           addTask(taskDraft.value);
           Navigator.pop(context);
-        } catch (e) {
+          taskDraft.value = defaultTask;
+        } catch (e, stack) {
+          print('ERROR: $e');
+          print('STACK: $stack');
           showDialog(
             context: context,
-            builder: (context) => AlertDialog(title: Text(e.toString())),
+            builder: (context) => AlertDialog(
+              title: Text(e.runtimeType.toString()),
+              content: Text(stack.toString()),
+            ),
           );
         }
       },

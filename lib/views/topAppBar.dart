@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:task_thingy/utils/misc.dart';
 import 'package:task_thingy/utils/theme.dart';
 import 'package:signals/signals_flutter.dart';
-
-var selectedDay = signal<int>(DateTime.now().weekday);
+import 'package:task_thingy/states/timelineTasks.dart';
 
 class topAppBar extends StatelessWidget implements PreferredSizeWidget {
   final BuildContext context;
@@ -15,7 +14,6 @@ class topAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    print("selected day: $selectedDay");
     DateTime date = DateTime.now();
     List<weekDay> days = [];
     DateTime weekStart = date.subtract(Duration(days: date.weekday - 1));
@@ -24,7 +22,7 @@ class topAppBar extends StatelessWidget implements PreferredSizeWidget {
       days.add(
         weekDay(
           day: (weekStart.day).toString(),
-          dayWeek: weekDays[i].toString(),
+          dayIndex: i,
           height: 75,
           width: 45,
         ),
@@ -54,73 +52,66 @@ class topAppBar extends StatelessWidget implements PreferredSizeWidget {
 
 class weekDay extends StatelessWidget {
   final String day;
-  final String dayWeek;
+  final int dayIndex;
   final double height;
   final double width;
 
   const weekDay({
     super.key,
     required this.day,
-    required this.dayWeek,
+    required this.dayIndex,
     required this.height,
     required this.width,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      alignment: Alignment.center,
-      margin: EdgeInsetsDirectional.only(bottom: 10),
-      decoration: BoxDecoration(
-        boxShadow:
-            selectedDay.value ==
-                int.parse(
-                  weekDays.keys
-                      .firstWhere((k) => weekDays[k] == dayWeek)
-                      .toString(),
-                )
-            ? [
-                BoxShadow(
-                  color: Color.fromARGB(197, 45, 94, 180),
-                  spreadRadius: 2,
-                  blurRadius: 2,
-                  offset: Offset(0, 0),
-                ),
-              ]
-            : null,
-        borderRadius: BorderRadius.circular(40),
+    return Watch((context) {
+      return GestureDetector(
+        child: Container(
+          alignment: Alignment.center,
+          margin: EdgeInsetsDirectional.only(bottom: 10),
+          decoration: BoxDecoration(
+            boxShadow: selectedDay.value == dayIndex
+                ? [
+                    BoxShadow(
+                      color: Color.fromARGB(197, 45, 94, 180),
+                      spreadRadius: 2,
+                      blurRadius: 2,
+                      offset: Offset(0, 0),
+                    ),
+                  ]
+                : null,
+            borderRadius: BorderRadius.circular(40),
 
-        color:
-            selectedDay.value ==
-                int.parse(
-                  weekDays.keys
-                      .firstWhere((k) => weekDays[k] == dayWeek)
-                      .toString(),
-                )
-            ? const Color.fromARGB(197, 45, 94, 180)
-            : null,
-      ),
-      height: height,
-      width: width,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            dayWeek,
-            style: TextStyle(
-              color: colors.taskTextColor.color,
-              fontSize: textSizes.taskTitle.textSize,
-            ),
+            color: selectedDay.value == dayIndex
+                ? const Color.fromARGB(197, 45, 94, 180)
+                : null,
           ),
-          Text(
-            day,
-            style: TextStyle(
-              color: colors.taskTextColor.color,
-              fontSize: textSizes.taskTitle.textSize,
-            ),
+          height: height,
+          width: width,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                weekDays[dayIndex]!,
+                style: TextStyle(
+                  color: colors.taskTextColor.color,
+                  fontSize: textSizes.taskTitle.textSize,
+                ),
+              ),
+              Text(
+                day,
+                style: TextStyle(
+                  color: colors.taskTextColor.color,
+                  fontSize: textSizes.taskTitle.textSize,
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
-    );
+        ),
+        onTap: () => {selectedDay.value = dayIndex},
+      );
+    });
   }
 }
