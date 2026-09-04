@@ -13,6 +13,7 @@ dependencies:
   provider: ^6.1.5
   signals: ^6.3.0
   speech_to_text: ^7.3.0
+  string_similarity: ^2.2.0
   
         
   
