@@ -17,9 +17,6 @@ A task manager that's (hopefully) helpful in managing the ver growing task list 
 
 
 
-  <h2>Downloads</h2>
-
-  There are APKs available to download for android. Note that these are "fat" apks , i.e aren't optimized for specific device types and as such are about 200~Mb . So far they're merely for testing purposes and as such are debug apps marked as pre release.They aren't in a usable state since the core features aren't implemented yet.
 
 
 
